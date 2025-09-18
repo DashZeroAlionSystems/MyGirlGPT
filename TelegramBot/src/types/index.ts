@@ -12,6 +12,10 @@ export interface ExchangeMessageData {
   }
   options?: {
     voice: boolean
+    voice_preset?: string
+    text_temp?: number
+    waveform_temp?: number
+    voice_call?: boolean
   }
 }
 

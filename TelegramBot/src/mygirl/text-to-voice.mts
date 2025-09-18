@@ -4,7 +4,10 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-export const textToVoice = async (textContent: string): Promise<string> => {
+export const textToVoice = async (
+  textContent: string,
+  options?: { voice_preset?: string; text_temp?: number; waveform_temp?: number },
+): Promise<string> => {
   console.log('call textToVoice', textContent)
   return new Promise((resolve, reject) => {
     const start = Date.now()
@@ -14,6 +17,9 @@ export const textToVoice = async (textContent: string): Promise<string> => {
         process.env.TTS_SERVER,
         {
           text: textContent,
+          voice_preset: options?.voice_preset,
+          text_temp: options?.text_temp,
+          waveform_temp: options?.waveform_temp,
         },
         {
           onDownloadProgress: (e) => {
