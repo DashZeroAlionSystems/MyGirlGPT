@@ -23,78 +23,38 @@
     <main class="app-main">
       <aside class="controls" id="controls">
         <section>
-          <h2>Body</h2>
-          <div class="field">
-            <label for="skinTone">Skin tone</label>
-            <select id="skinTone"></select>
+          <h2>Material Selectors</h2>
+          <div class="md-card">
+            <div class="md-card-title">Style preset</div>
+            <div id="presetGrid" class="grid chips"></div>
           </div>
-          <div class="field">
-            <label for="bodyType">Body type</label>
-            <select id="bodyType"></select>
+          <div class="md-card">
+            <div class="md-card-title">Skin tone</div>
+            <div id="skinGrid" class="grid swatches"></div>
           </div>
-        </section>
-
-        <section>
-          <h2>Face</h2>
-          <div class="field">
-            <label for="eyeShape">Eyes</label>
-            <select id="eyeShape"></select>
+          <div class="md-card">
+            <div class="md-card-title">Hair</div>
+            <div id="hairStyleGrid" class="grid cards"></div>
+            <div class="field">
+              <label>Hair color</label>
+              <div id="hairColorGrid" class="grid swatches"></div>
+            </div>
           </div>
-          <div class="field">
-            <label for="noseType">Nose</label>
-            <select id="noseType"></select>
+          <div class="md-card">
+            <div class="md-card-title">Body type</div>
+            <div id="bodyTypeGrid" class="grid chips"></div>
           </div>
-          <div class="field">
-            <label for="mouthType">Mouth</label>
-            <select id="mouthType"></select>
+          <div class="md-card">
+            <div class="md-card-title">Outfit</div>
+            <div id="outfitGrid" class="grid cards"></div>
+            <div class="field">
+              <label>Accent colors</label>
+              <div id="outfitColorGrid" class="grid swatches"></div>
+            </div>
           </div>
-          <div class="field">
-            <label for="blush">Blush</label>
-            <input type="checkbox" id="blush">
-          </div>
-        </section>
-
-        <section>
-          <h2>Hair</h2>
-          <div class="field">
-            <label for="hairStyle">Style</label>
-            <select id="hairStyle"></select>
-          </div>
-          <div class="field">
-            <label for="hairColor">Color</label>
-            <input id="hairColor" type="color" value="#3b2f2f">
-          </div>
-        </section>
-
-        <section>
-          <h2>Clothing</h2>
-          <div class="field">
-            <label for="outfitType">Outfit</label>
-            <select id="outfitType"></select>
-          </div>
-          <div class="field">
-            <label for="topColor">Top color</label>
-            <input id="topColor" type="color" value="#7aa2ff">
-          </div>
-          <div class="field">
-            <label for="bottomColor">Bottom color</label>
-            <input id="bottomColor" type="color" value="#ff8fab">
-          </div>
-          <div class="field">
-            <label for="dressColor">Dress color</label>
-            <input id="dressColor" type="color" value="#9b5de5">
-          </div>
-          <div class="field">
-            <label for="shoeColor">Shoes</label>
-            <input id="shoeColor" type="color" value="#222222">
-          </div>
-          <div class="field">
-            <label for="accessory">Accessory</label>
-            <select id="accessory"></select>
-          </div>
-          <div class="field">
-            <label for="accessoryColor">Accessory color</label>
-            <input id="accessoryColor" type="color" value="#ffd166">
+          <div class="md-card">
+            <div class="md-card-title">Pose</div>
+            <div id="poseGrid" class="grid chips"></div>
           </div>
         </section>
       </aside>
@@ -110,6 +70,19 @@
         </div>
         <div class="stage" id="stage">
           <svg id="avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600" shape-rendering="geometricPrecision" text-rendering="optimizeLegibility"></svg>
+          <div class="prompt-panel md-card">
+            <div class="md-card-title">Stable Diffusion Prompt</div>
+            <textarea id="promptOut" rows="6" readonly></textarea>
+            <textarea id="negativeOut" rows="3" readonly></textarea>
+            <div class="row">
+              <button id="btn-generate-prompt" class="primary">Generate Prompt</button>
+              <button id="btn-copy">Copy</button>
+            </div>
+            <details>
+              <summary>API payload (Automatic1111)</summary>
+              <pre id="apiPayload"></pre>
+            </details>
+          </div>
         </div>
       </section>
     </main>

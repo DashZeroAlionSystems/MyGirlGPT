@@ -58,6 +58,22 @@ button:active { transform: translateY(1px); }
 label { font-size: 12px; color: var(--ink-weak); }
 select, input[type="color"], input[type="range"] { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #e5e7eb; background: #fff; }
 
+/* Material-like cards and grids */
+.md-card { border: 1px solid #e8eaf6; border-radius: 12px; padding: 10px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.06); margin-bottom: 12px; }
+.md-card-title { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+.grid { display: grid; gap: 8px; }
+.grid.cards { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); }
+.grid.swatches { grid-template-columns: repeat(auto-fill, minmax(32px, 1fr)); }
+.grid.chips { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+.chip, .card, .swatch { border: 1px solid #e5e7eb; background: #fff; border-radius: 10px; padding: 8px; cursor: pointer; user-select: none; text-align: center; font-size: 12px; color: #374151; }
+.chip.selected, .card.selected, .swatch.selected { outline: 2px solid var(--primary); border-color: var(--primary); }
+.card img { width: 100%; height: 70px; object-fit: cover; border-radius: 8px; margin-bottom: 6px; background: #f3f4f6; }
+.swatch { height: 32px; }
+
+.prompt-panel textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: #f9fafb; }
+.prompt-panel pre { white-space: pre-wrap; word-break: break-word; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; }
+.row { display: flex; gap: 8px; margin: 8px 0; }
+
 .stage-wrap { display: grid; gap: 12px; }
 .stage-controls { display: flex; gap: 12px; align-items: center; background: var(--panel); padding: 8px 12px; border: 1px solid #e8eaf6; border-radius: 12px; }
 .stage {
