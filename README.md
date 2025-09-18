@@ -58,6 +58,40 @@ The model is [TehVenom/Pygmalion-Vicuna-1.1-7b](https://huggingface.co/TehVenom/
 * Voice Generation: Utilize [Bark](https://github.com/suno-ai/bark) to generate a voice for your AI model, enhancing the immersive experience.
 * Selfie Generation: Your AI girlfriend is capable of generating photorealistic selfies upon request, powered by [Stable Diffusion web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui).
 
+### NSFW Stable Diffusion (Images & Video)
+
+The repository includes scripts to generate NSFW images via Stable Diffusion WebUI API and short NSFW videos using Stable Video Diffusion.
+
+1) Install dependencies (ideally in a virtual environment):
+
+```bash
+pip install -r requirements-nsfw.txt
+```
+
+2) Generate an NSFW image (requires WebUI running with `--api`):
+
+```bash
+python scripts/nsfw_txt2img.py "your nsfw prompt here" --address http://127.0.0.1:7860 --out outputs/nsfw_img.png
+```
+
+Optional flags: `--negative`, `--width`, `--height`, `--steps`, `--cfg`, `--sampler`, `--seed`, `--model`, `--hr-scale`, `--hr-upscaler`.
+
+3) Generate an NSFW video from an image using Stable Video Diffusion (will download the `stabilityai/stable-video-diffusion-img2vid-xt` model on first run):
+
+```bash
+python scripts/nsfw_img2video.py --image outputs/nsfw_img.png --out outputs/nsfw_video.mp4
+```
+
+Or generate the base image via WebUI in one go:
+
+```bash
+python scripts/nsfw_img2video.py --prompt "your nsfw prompt here" --address http://127.0.0.1:7860 --out outputs/nsfw_video.mp4
+```
+
+Notes:
+- These scripts are intended for private, legal use only. Ensure compliance with local laws and platform policies regarding NSFW content.
+- For WebUI, start with `--api` (and `--listen` if accessed remotely). Adjust sampler/model names to match your WebUI setup.
+
 ## Roadmap
 * Long-Term Memory: Enable MyGirlGPT to "remember" conversations long-term, which will enhance the depth and continuity of your interactions.
 * Video Messages: Your AI girlfriend will be able to send you videos of herself, providing a more immersive and engaging experience.
