@@ -33,7 +33,12 @@ params = {
     'seed': -1,
     'sampler_name': 'DDIM',
     'steps': 32,
-    'cfg_scale': 7
+    'cfg_scale': 7,
+    # NSFW options
+    'nsfw_mode': False,
+    'nsfw_prompt_prefix': '(8k, best quality, masterpiece:1.2), (realistic, photo-realistic:1.37), ultra-detailed, ultra high res, 1 girl, solo',
+    'nsfw_negative_prompt': 'paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, (monochrome), (grayscale), (bad-hands-5:0.8), (negative_hand-neg:0.8), easynegative, ng_deepnegative_v1_75t, ((belly wrinkles, abs, navel piercing, nail polish, mole)), (bad-artist, bad-image-v2-39000)',
+    'nsfw_model': ''
 }
 
 
@@ -128,8 +133,11 @@ def get_SD_pictures(description):
     if params['manage_VRAM']:
         give_VRAM_priority('SD')
 
+    effective_prefix = params['nsfw_prompt_prefix'] if params.get('nsfw_mode') else params['prompt_prefix']
+    effective_negative = params['nsfw_negative_prompt'] if params.get('nsfw_mode') else params['negative_prompt']
+
     payload = {
-        "prompt": params['prompt_prefix'] + description,
+        "prompt": effective_prefix + description,
         "seed": params['seed'],
         "sampler_name": params['sampler_name'],
         "enable_hr": params['enable_hr'],
@@ -142,8 +150,16 @@ def get_SD_pictures(description):
         "height": params['height'],
         "restore_faces": params['restore_faces'],
         "override_settings_restore_afterwards": True,
-        "negative_prompt": params['negative_prompt']
+        "negative_prompt": effective_negative
     }
+
+    # If NSFW mode is on and a specific model is provided, request WebUI to load it
+    if params.get('nsfw_mode') and params.get('nsfw_model'):
+        payload.update({
+            'override_settings': {
+                'sd_model_checkpoint': params['nsfw_model']
+            }
+        })
 
     print(f'Prompting the image generator via the API on {params["address"]}...')
     response = requests.post(url=f'{params["address"]}/sdapi/v1/txt2img', json=payload)
@@ -279,6 +295,11 @@ def ui():
             prompt_prefix = gr.Textbox(placeholder=params['prompt_prefix'], value=params['prompt_prefix'], label='Prompt Prefix (best used to describe the look of the character)')
             negative_prompt = gr.Textbox(placeholder=params['negative_prompt'], value=params['negative_prompt'], label='Negative Prompt')
             with gr.Row():
+                nsfw_mode = gr.Checkbox(value=params['nsfw_mode'], label='NSFW mode')
+                nsfw_model = gr.Textbox(placeholder='Optional: SD model checkpoint name for NSFW', value=params['nsfw_model'], label='NSFW Model (optional)')
+            nsfw_prompt_prefix = gr.Textbox(placeholder=params['nsfw_prompt_prefix'], value=params['nsfw_prompt_prefix'], label='NSFW Prompt Prefix')
+            nsfw_negative_prompt = gr.Textbox(placeholder=params['nsfw_negative_prompt'], value=params['nsfw_negative_prompt'], label='NSFW Negative Prompt')
+            with gr.Row():
                 with gr.Column():
                     width = gr.Slider(256, 768, value=params['width'], step=64, label='Width')
                     height = gr.Slider(256, 768, value=params['height'], step=64, label='Height')
@@ -308,6 +329,10 @@ def ui():
     address.submit(fn=SD_api_address_update, inputs=address, outputs=address)
     prompt_prefix.change(lambda x: params.update({"prompt_prefix": x}), prompt_prefix, None)
     negative_prompt.change(lambda x: params.update({"negative_prompt": x}), negative_prompt, None)
+    nsfw_mode.change(lambda x: params.update({"nsfw_mode": x}), nsfw_mode, None)
+    nsfw_model.change(lambda x: params.update({"nsfw_model": x}), nsfw_model, None)
+    nsfw_prompt_prefix.change(lambda x: params.update({"nsfw_prompt_prefix": x}), nsfw_prompt_prefix, None)
+    nsfw_negative_prompt.change(lambda x: params.update({"nsfw_negative_prompt": x}), nsfw_negative_prompt, None)
     width.change(lambda x: params.update({"width": x}), width, None)
     height.change(lambda x: params.update({"height": x}), height, None)
     hr_scale.change(lambda x: params.update({"hr_scale": x}), hr_scale, None)
