@@ -22,6 +22,9 @@ class BotApp {
     bot.command('start', this.handleCommandStart)
     bot.command('voice', this.handleCommandVoice)
     bot.command('reset', this.handleCommandReset)
+    bot.command('setvoice', this.handleCommandSetVoice)
+    bot.command('listvoices', this.handleCommandListVoices)
+    bot.command('voicecall', this.handleCommandVoiceCall)
 
     bot.on('message::mention', this.handleMessageMention)
     bot.on('message:text', this.handleMessageText)
@@ -52,6 +55,8 @@ class BotApp {
 
   // default is false
   private voiceSettings: Map<string /* chat id */, boolean> = new Map()
+  private voicePresetByChat: Map<string /* chat id */, string> = new Map()
+  private voiceCallModeByChat: Map<string /* chat id */, boolean> = new Map()
 
   private handleCommandStart = async (ctx: CustomContext) => {
     console.log('handleCommandStart')
@@ -121,6 +126,35 @@ class BotApp {
       },
     })
     ctx.reply('Done!')
+  }
+
+  private handleCommandListVoices = async (ctx: CustomContext) => {
+    const presets = ['sweet', 'warm', 'cute']
+    await ctx.reply(`Available voices: ${presets.join(', ')}\nUse /setvoice <name> to set.`).catch(() => {})
+  }
+
+  private handleCommandSetVoice = async (ctx: CustomContext) => {
+    const chatId = ctx.chat?.id
+    const text = ctx.message?.text ?? ''
+    if (chatId === undefined) return
+    const parts = text.split(' ').filter(Boolean)
+    const preset = parts[1]?.toLowerCase()
+    const allowed = new Set(['sweet', 'warm', 'cute'])
+    if (!preset || !allowed.has(preset)) {
+      await ctx.reply('Usage: /setvoice <sweet|warm|cute>').catch(() => {})
+      return
+    }
+    this.voicePresetByChat.set(`${chatId}`, preset)
+    await ctx.reply(`Voice preset set to: ${preset}`).catch(() => {})
+  }
+
+  private handleCommandVoiceCall = async (ctx: CustomContext) => {
+    const chatId = ctx.chat?.id
+    if (chatId === undefined) return
+    const current = this.voiceCallModeByChat.get(`${chatId}`) ?? false
+    const next = !current
+    this.voiceCallModeByChat.set(`${chatId}`, next)
+    await ctx.reply(`Voice call mode ${next ? 'enabled' : 'disabled'}.`).catch(() => {})
   }
 
   private handleCallbackQueryTurnOnVoice = (ctx: CustomContext) => {
@@ -205,6 +239,8 @@ class BotApp {
           },
           options: {
             voice: this.voiceSettings.get(`${chatId}`) ?? false,
+            voice_preset: this.voicePresetByChat.get(`${chatId}`) ?? undefined,
+            voice_call: this.voiceCallModeByChat.get(`${chatId}`) ?? false,
           },
         })
       }
@@ -252,6 +288,8 @@ class BotApp {
         },
         options: {
           voice: this.voiceSettings.get(`${chatId}`) ?? false,
+          voice_preset: this.voicePresetByChat.get(`${chatId}`) ?? undefined,
+          voice_call: this.voiceCallModeByChat.get(`${chatId}`) ?? false,
         },
       })
     }

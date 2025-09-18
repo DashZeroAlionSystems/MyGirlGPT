@@ -83,18 +83,24 @@ class App {
                 })
               } else {
                 const prunedContent = part.replace(/\*.*?\*/g, '').trim()
-                const voiceData = await textToVoice(prunedContent).catch(() => {})
-                // reply text
-                this.websocketClient.replyMessageRequest({
-                  user: data.user,
-                  chat: data.chat,
-                  message: {
-                    type: 'text',
-                    content: part,
-                    id: data.message.id,
-                  },
-                  options: data.options,
-                })
+                const voiceData = await textToVoice(prunedContent, {
+                  voice_preset: data.options?.voice_preset,
+                  text_temp: data.options?.text_temp,
+                  waveform_temp: data.options?.waveform_temp,
+                }).catch(() => {})
+                if (data.options?.voice_call !== true) {
+                  // reply text as well
+                  this.websocketClient.replyMessageRequest({
+                    user: data.user,
+                    chat: data.chat,
+                    message: {
+                      type: 'text',
+                      content: part,
+                      id: data.message.id,
+                    },
+                    options: data.options,
+                  })
+                }
                 if (voiceData !== undefined) {
                   // reply voice
                   this.websocketClient.replyMessageRequest({

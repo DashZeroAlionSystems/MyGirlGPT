@@ -55,6 +55,13 @@ app.add_middleware(
     allow_headers=["*"])  # Allowing cross domain headers can be used to identify sources and other functions.
 
 
+GIRLFRIEND_PRESETS = {
+    "sweet": "en_speaker_8",
+    "warm": "en_speaker_9",
+    "cute": "v2/en_speaker_6",
+}
+
+
 @app.post("/tts_bark/")
 async def tts_bark(item: schemas.generate_web):
     time_start = time.time()
@@ -62,10 +69,14 @@ async def tts_bark(item: schemas.generate_web):
     print(f"{text=}")
     try:
         sentences = nltk.sent_tokenize(text)
+        preset = (item.voice_preset or "sweet").lower()
+        history_prompt = GIRLFRIEND_PRESETS.get(preset, GIRLFRIEND_PRESETS["sweet"])
+        text_temp = item.text_temp if item.text_temp is not None else 0.6
+        waveform_temp = item.waveform_temp if item.waveform_temp is not None else 0.6
         idx = 1
         wavs = []
         for s in sentences:
-            audio_array = generate_audio(s, history_prompt="en_speaker_8", text_temp=0.6, waveform_temp=0.6)
+            audio_array = generate_audio(s, history_prompt=history_prompt, text_temp=text_temp, waveform_temp=waveform_temp)
             fname = f"tmp-{idx}.wav"
             sf.write(fname, audio_array, SAMPLE_RATE)
             idx += 1
