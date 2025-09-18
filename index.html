@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Graphics Girlfriend Look Generator</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Girlfriend Look Generator</h1>
+      <div class="header-actions">
+        <button id="btn-random" class="primary">Randomize</button>
+        <button id="btn-export-png">Export PNG</button>
+        <button id="btn-export-json">Export JSON</button>
+        <label class="import-label">
+          <input type="file" id="input-import-json" accept="application/json" hidden>
+          <span class="button">Import JSON</span>
+        </label>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <aside class="controls" id="controls">
+        <section>
+          <h2>Body</h2>
+          <div class="field">
+            <label for="skinTone">Skin tone</label>
+            <select id="skinTone"></select>
+          </div>
+          <div class="field">
+            <label for="bodyType">Body type</label>
+            <select id="bodyType"></select>
+          </div>
+        </section>
+
+        <section>
+          <h2>Face</h2>
+          <div class="field">
+            <label for="eyeShape">Eyes</label>
+            <select id="eyeShape"></select>
+          </div>
+          <div class="field">
+            <label for="noseType">Nose</label>
+            <select id="noseType"></select>
+          </div>
+          <div class="field">
+            <label for="mouthType">Mouth</label>
+            <select id="mouthType"></select>
+          </div>
+          <div class="field">
+            <label for="blush">Blush</label>
+            <input type="checkbox" id="blush">
+          </div>
+        </section>
+
+        <section>
+          <h2>Hair</h2>
+          <div class="field">
+            <label for="hairStyle">Style</label>
+            <select id="hairStyle"></select>
+          </div>
+          <div class="field">
+            <label for="hairColor">Color</label>
+            <input id="hairColor" type="color" value="#3b2f2f">
+          </div>
+        </section>
+
+        <section>
+          <h2>Clothing</h2>
+          <div class="field">
+            <label for="outfitType">Outfit</label>
+            <select id="outfitType"></select>
+          </div>
+          <div class="field">
+            <label for="topColor">Top color</label>
+            <input id="topColor" type="color" value="#7aa2ff">
+          </div>
+          <div class="field">
+            <label for="bottomColor">Bottom color</label>
+            <input id="bottomColor" type="color" value="#ff8fab">
+          </div>
+          <div class="field">
+            <label for="dressColor">Dress color</label>
+            <input id="dressColor" type="color" value="#9b5de5">
+          </div>
+          <div class="field">
+            <label for="shoeColor">Shoes</label>
+            <input id="shoeColor" type="color" value="#222222">
+          </div>
+          <div class="field">
+            <label for="accessory">Accessory</label>
+            <select id="accessory"></select>
+          </div>
+          <div class="field">
+            <label for="accessoryColor">Accessory color</label>
+            <input id="accessoryColor" type="color" value="#ffd166">
+          </div>
+        </section>
+      </aside>
+
+      <section class="stage-wrap">
+        <div class="stage-controls">
+          <label>Scale
+            <input id="scaleRange" type="range" min="0.5" max="2" step="0.05" value="1">
+          </label>
+          <label>BG
+            <input id="backgroundColor" type="color" value="#f7f7fb">
+          </label>
+        </div>
+        <div class="stage" id="stage">
+          <svg id="avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600" shape-rendering="geometricPrecision" text-rendering="optimizeLegibility"></svg>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Built with SVG layers • Export/Import supported</span>
+      <a id="downloadLink" download="girlfriend-look.png" class="hidden">download</a>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+  </html>
+
