@@ -28,6 +28,10 @@ openai.api_key  = os.getenv('OPENAI_API_KEY')
 if os.getenv('OPENAI_API_BASE') != None and os.getenv('OPENAI_API_BASE') != '':
   openai.api_base = os.getenv('OPENAI_API_BASE')
 sd_address = os.getenv('SD_ADDRESS')
+nsfw_mode_env = os.getenv('NSFW_MODE', '').lower() in ('1', 'true', 'yes', 'on')
+nsfw_prompt_env = os.getenv('NSFW_PROMPT_PREFIX', '')
+nsfw_negative_env = os.getenv('NSFW_NEGATIVE_PROMPT', '')
+nsfw_model_env = os.getenv('NSFW_SD_MODEL', '')
 
 # parameters which can be customized in settings.json of webui
 params = {
@@ -47,7 +51,12 @@ params = {
     'sampler_name': 'DPM++ SDE Karras',
     'steps': 20,
     'cfg_scale': 7,
-    'translations': True
+    'translations': True,
+    # NSFW options
+    'nsfw_mode': nsfw_mode_env,
+    'nsfw_prompt_prefix': nsfw_prompt_env if nsfw_prompt_env else '(8k, best quality, masterpiece:1.2), (realistic, photo-realistic:1.37), ultra-detailed, ultra high res, 1 girl, solo',
+    'nsfw_negative_prompt': nsfw_negative_env if nsfw_negative_env else 'paintings,sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, (monochrome), (grayscale),(bad-hands-5:0.8),(negative_hand-neg:0.8),easynegative, ng_deepnegative_v1_75t,((belly wrinkles,abs,navel piercing,nail polish,mole)),(bad-artist, bad-image-v2-39000)',
+    'nsfw_model': nsfw_model_env,
 }
 
 characterfocus = ""
@@ -132,8 +141,10 @@ def get_sd_pictures(description):
         triggered_array = add_translations(initial_string,triggered_array,tpatterns)
         add_translations(description,triggered_array,tpatterns)
 
+    prompt_prefix = params['nsfw_prompt_prefix'] if params.get('nsfw_mode') else params['prompt_prefix']
+    negative_prompt = params['nsfw_negative_prompt'] if params.get('nsfw_mode') else params['negative_prompt']
     payload = {
-        "prompt": params['prompt_prefix']  + ", " + description + ", " + positive_suffix,
+        "prompt": prompt_prefix  + ", " + description + ", " + positive_suffix,
         "seed": params['seed'],
         "sampler_name": params['sampler_name'],
         "enable_hr": params['enable_hr'],
@@ -146,10 +157,10 @@ def get_sd_pictures(description):
         "height": params['height'],
         "restore_faces": params['restore_faces'],
         "override_settings": {
-           "sd_model_checkpoint": params['SD_model'],
+           "sd_model_checkpoint": (params['nsfw_model'] if params.get('nsfw_mode') and params.get('nsfw_model') else params['SD_model']),
         },
         "override_settings_restore_afterwards": True,
-        "negative_prompt": params['negative_prompt'] + ", " + negative_suffix
+        "negative_prompt": negative_prompt + ", " + negative_suffix
     }
     logging.info(f'prompt: {payload["prompt"]}')
 

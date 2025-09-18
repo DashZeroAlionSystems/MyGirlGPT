@@ -6,6 +6,7 @@ from datetime import date
 from pathlib import Path
 
 import gradio as gr
+import os
 import modules.shared as shared
 import requests
 import torch
@@ -35,10 +36,10 @@ params = {
     'steps': 32,
     'cfg_scale': 7,
     # NSFW options
-    'nsfw_mode': False,
-    'nsfw_prompt_prefix': '(8k, best quality, masterpiece:1.2), (realistic, photo-realistic:1.37), ultra-detailed, ultra high res, 1 girl, solo',
-    'nsfw_negative_prompt': 'paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, (monochrome), (grayscale), (bad-hands-5:0.8), (negative_hand-neg:0.8), easynegative, ng_deepnegative_v1_75t, ((belly wrinkles, abs, navel piercing, nail polish, mole)), (bad-artist, bad-image-v2-39000)',
-    'nsfw_model': ''
+    'nsfw_mode': os.getenv('NSFW_MODE', '').lower() in ('1', 'true', 'yes', 'on'),
+    'nsfw_prompt_prefix': os.getenv('NSFW_PROMPT_PREFIX', '(8k, best quality, masterpiece:1.2), (realistic, photo-realistic:1.37), ultra-detailed, ultra high res, 1 girl, solo'),
+    'nsfw_negative_prompt': os.getenv('NSFW_NEGATIVE_PROMPT', 'paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, (monochrome), (grayscale), (bad-hands-5:0.8), (negative_hand-neg:0.8), easynegative, ng_deepnegative_v1_75t, ((belly wrinkles, abs, navel piercing, nail polish, mole)), (bad-artist, bad-image-v2-39000)'),
+    'nsfw_model': os.getenv('NSFW_SD_MODEL', '')
 }
 
 
