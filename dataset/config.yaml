@@ -1,0 +1,27 @@
+allowlist:
+  - "https://www.literotica.com/"
+  - "https://www.reddit.com/r/gonewildstories/"
+  - "https://www.reddit.com/r/sexstories/"
+  - "https://www.quora.com/"
+  - "https://archiveofourown.org/"
+
+user_agent: "MyGirlGPTScraper/1.0 (+contact: admin@example.com)"
+concurrency: 5
+rate_limit_per_host_per_minute: 60
+request_timeout_seconds: 20
+max_pages_per_domain: 200
+
+nsfw_keywords:
+  - "nsfw"
+  - "sex"
+  - "dirty"
+  - "explicit"
+  - "adult"
+
+exclude_patterns:
+  - "(?i)child|minor|under\\s*18|teen\\b|preteen|incest|rape|non[-\\s]*consensual|bestiality|beast|animal|loli|shota|cub"
+
+output_dir: "./dataset/out"
+raw_dir: "./dataset/out/raw"
+clean_dir: "./dataset/out/clean"
+jsonl_file: "./dataset/out/girlfriend_dialogues.jsonl"
