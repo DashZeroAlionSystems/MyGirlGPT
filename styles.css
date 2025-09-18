@@ -73,6 +73,8 @@ select, input[type="color"], input[type="range"] { width: 100%; padding: 8px; bo
 .prompt-panel textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: #f9fafb; }
 .prompt-panel pre { white-space: pre-wrap; word-break: break-word; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px; }
 .row { display: flex; gap: 8px; margin: 8px 0; }
+.gallery #results img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+.gallery .card { padding: 0; }
 
 .stage-wrap { display: grid; gap: 12px; }
 .stage-controls { display: flex; gap: 12px; align-items: center; background: var(--panel); padding: 8px 12px; border: 1px solid #e8eaf6; border-radius: 12px; }

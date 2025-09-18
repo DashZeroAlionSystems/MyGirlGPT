@@ -8,6 +8,9 @@ const state = {
   outfitColors: ['#9b5de5', '#ffd6e7'],
   pose: 'natural standing',
   seed: Math.floor(Math.random() * 1000000),
+  backend: { type: 'a1111', url: '', model: '' },
+  files: { reference: null, pose: null, mask: null },
+  referenceStrength: 0.6,
 };
 
 const PRESETS = [
@@ -225,8 +228,117 @@ function init() {
   $('btn-random').addEventListener('click', randomize);
   $('btn-generate-prompt').addEventListener('click', updatePromptOutputs);
   $('btn-copy').addEventListener('click', copyPrompt);
+  $('backendType').addEventListener('change', e => { state.backend.type = e.target.value; });
+  $('backendUrl').addEventListener('input', e => { state.backend.url = e.target.value.trim(); });
+  $('modelName').addEventListener('input', e => { state.backend.model = e.target.value.trim(); });
+  $('input-reference').addEventListener('change', e => { state.files.reference = e.target.files[0] || null; });
+  $('input-pose').addEventListener('change', e => { state.files.pose = e.target.files[0] || null; });
+  $('input-mask').addEventListener('change', e => { state.files.mask = e.target.files[0] || null; });
+  $('referenceStrength').addEventListener('input', e => { state.referenceStrength = Number(e.target.value); });
+  $('btn-test-backend').addEventListener('click', testBackend);
+  $('btn-generate-img').addEventListener('click', () => generateImage('txt2img'));
+  $('btn-generate-img2img').addEventListener('click', () => generateImage('img2img'));
+  $('btn-export-video-json').addEventListener('click', exportVideoJSON);
   renderSelectors();
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+async function testBackend() {
+  if (!state.backend.url) { alert('Enter backend URL'); return; }
+  try {
+    const res = await fetch(state.backend.url + '/sdapi/v1/sd-models', { method: 'GET' });
+    if (!res.ok) throw new Error(await res.text());
+    alert('Backend reachable.');
+  } catch (e) {
+    alert('Backend error: ' + e.message);
+  }
+}
+
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+async function generateImage(mode) {
+  const url = state.backend.url;
+  if (!url) { alert('Set backend URL'); return; }
+  const payload = buildApiPayload();
+  if (state.backend.model) payload.override_settings = { sd_model_checkpoint: state.backend.model };
+
+  let endpoint = '/sdapi/v1/txt2img';
+  if (mode === 'img2img') endpoint = '/sdapi/v1/img2img';
+
+  const controlnetArgs = [];
+  if (state.files.pose) {
+    const b64 = await fileToDataURL(state.files.pose);
+    controlnetArgs.push({
+      input_image: b64,
+      module: 'openpose',
+      model: 'control_v11p_sd15_openpose [cab727d4]',
+      weight: 0.8,
+      resize_mode: 1,
+      guidance: 1.0,
+      guidance_start: 0.0,
+      guidance_end: 1.0,
+    });
+  }
+  if (controlnetArgs.length > 0) {
+    payload.alwayson_scripts = payload.alwayson_scripts || {};
+    payload.alwayson_scripts.controlnet = { args: controlnetArgs };
+  }
+
+  if (mode === 'img2img' && state.files.reference) {
+    payload.init_images = [await fileToDataURL(state.files.reference)];
+    payload.denoising_strength = state.referenceStrength;
+    if (state.files.mask) payload.mask = await fileToDataURL(state.files.mask);
+  }
+
+  try {
+    const res = await fetch(url + endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    const images = data.images || [];
+    const container = document.getElementById('results');
+    container.innerHTML = '';
+    images.forEach(imgB64 => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const img = document.createElement('img');
+      img.src = 'data:image/png;base64,' + imgB64;
+      card.appendChild(img);
+      container.appendChild(card);
+    });
+  } catch (e) {
+    alert('Generation error: ' + e.message);
+  }
+}
+
+function exportVideoJSON() {
+  const { prompt, negative } = buildPrompt();
+  const deforum = {
+    animation_mode: '2D',
+    max_frames: 120,
+    fps: 12,
+    seed: state.seed,
+    sampler: 'DPM++ 2M Karras',
+    steps: 25,
+    cfg_scale: state.preset === 'anime' ? 6.5 : 5.5,
+    width: 768,
+    height: 1152,
+    text_prompts: {
+      '0': prompt,
+    },
+    negative_prompt: negative,
+  };
+  const blob = new Blob([JSON.stringify(deforum, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'video_prompt.json';
+  a.click();
+}
 
